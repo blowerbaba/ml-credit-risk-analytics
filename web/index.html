@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Enterprise ML Credit Risk Intelligence Platform</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Top Navbar -->
+        <header class="navbar">
+            <div class="logo-group">
+                <div class="logo-icon"><i class="fa-solid fa-brain"></i></div>
+                <div>
+                    <h1 class="logo-title">CREDIT<span>RISK</span>.AI</h1>
+                    <p class="logo-subtitle">Enterprise ML Predictive Intelligence Suite</p>
+                </div>
+            </div>
+            
+            <div class="nav-tabs">
+                <button class="tab-btn active" onclick="switchTab('simulator-tab')">
+                    <i class="fa-solid fa-calculator"></i> Live Risk Simulator
+                </button>
+                <button class="tab-btn" onclick="switchTab('batch-tab')">
+                    <i class="fa-solid fa-file-csv"></i> Batch CSV Suite
+                </button>
+                <button class="tab-btn" onclick="switchTab('analytics-tab')">
+                    <i class="fa-solid fa-chart-line"></i> Model Benchmarks & SHAP
+                </button>
+            </div>
+
+            <div class="status-badge" id="system-status">
+                <span class="pulse-dot"></span> System Live: XGBoost Model
+            </div>
+        </header>
+
+        <!-- Main Content Body -->
+        <main class="content-wrapper">
+            
+            <!-- TAB 1: LIVE RISK SIMULATOR -->
+            <section id="simulator-tab" class="tab-content active">
+                <div class="grid-layout">
+                    <!-- Left Column: Input Form Card -->
+                    <div class="glass-card form-card">
+                        <div class="card-header">
+                            <h2><i class="fa-solid fa-user-gear"></i> Credit Applicant Profile</h2>
+                            <p>Adjust applicant financial parameters for real-time model inference.</p>
+                        </div>
+                        
+                        <form id="risk-form" onsubmit="handlePrediction(event)">
+                            <div class="form-grid">
+                                <div class="form-group">
+                                    <label for="age">Age</label>
+                                    <input type="number" id="age" value="34" min="18" max="100" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="annual_income">Annual Income ($)</label>
+                                    <input type="number" id="annual_income" value="72000" min="10000" step="1000" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="credit_score">Credit Score (FICO)</label>
+                                    <input type="number" id="credit_score" value="685" min="300" max="850" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="debt_to_income_ratio">Debt-to-Income Ratio (0 to 1)</label>
+                                    <input type="number" id="debt_to_income_ratio" value="0.32" min="0" max="1" step="0.01" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="credit_utilization_rate">Credit Utilization Rate (0 to 1)</label>
+                                    <input type="number" id="credit_utilization_rate" value="0.45" min="0" max="1" step="0.01" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="payment_history_score">Payment History Score (0-100)</label>
+                                    <input type="number" id="payment_history_score" value="88" min="0" max="100" step="0.1" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="loan_amount">Requested Loan ($)</label>
+                                    <input type="number" id="loan_amount" value="18000" min="500" step="500" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="employment_length_years">Employment (Years)</label>
+                                    <input type="number" id="employment_length_years" value="5" min="0" max="50" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="revolving_balance">Revolving Balance ($)</label>
+                                    <input type="number" id="revolving_balance" value="6500" min="0" step="100" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="num_credit_lines">Open Credit Lines</label>
+                                    <input type="number" id="num_credit_lines" value="7" min="1" max="50" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="home_ownership">Home Ownership</label>
+                                    <select id="home_ownership">
+                                        <option value="MORTGAGE" selected>MORTGAGE</option>
+                                        <option value="RENT">RENT</option>
+                                        <option value="OWN">OWN</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="loan_intent">Loan Intent</label>
+                                    <select id="loan_intent">
+                                        <option value="PERSONAL" selected>PERSONAL</option>
+                                        <option value="DEBTCONSOLIDATION">DEBT CONSOLIDATION</option>
+                                        <option value="EDUCATION">EDUCATION</option>
+                                        <option value="MEDICAL">MEDICAL</option>
+                                        <option value="VENTURE">VENTURE</option>
+                                    </select>
+                                </div>
+                            </div>
+                            
+                            <button type="submit" class="submit-btn" id="predict-btn">
+                                <i class="fa-solid fa-bolt"></i> Evaluate Default Risk
+                            </button>
+                        </form>
+                    </div>
+
+                    <!-- Right Column: Live Results Display -->
+                    <div class="glass-card result-card">
+                        <div class="card-header">
+                            <h2><i class="fa-solid fa-shield-halved"></i> Risk Evaluation Output</h2>
+                            <p>Real-time ML risk probability and factor analysis.</p>
+                        </div>
+                        
+                        <div class="result-body">
+                            <!-- Circular Gauge Display -->
+                            <div class="gauge-wrapper">
+                                <div class="gauge-circle" id="gauge-circle">
+                                    <div class="gauge-inner">
+                                        <span class="gauge-value" id="risk-score-display">--</span>
+                                        <span class="gauge-unit">DEFAULT RISK</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="recommendation-box" id="rec-box">
+                                <h3 id="risk-level-badge">AWAITING EVALUATION</h3>
+                                <p id="recommendation-text">Submit applicant parameters to run instant inference.</p>
+                            </div>
+
+                            <div class="risk-factors-container">
+                                <h4><i class="fa-solid fa-triangle-exclamation"></i> Key Risk Indicators</h4>
+                                <ul class="risk-factors-list" id="risk-factors-list">
+                                    <li><i class="fa-solid fa-circle-info"></i> Fill form parameters and click evaluate.</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- TAB 2: BATCH CSV SUITE -->
+            <section id="batch-tab" class="tab-content">
+                <div class="glass-card">
+                    <div class="card-header">
+                        <h2><i class="fa-solid fa-file-csv"></i> Automated Batch Prediction Suite</h2>
+                        <p>Upload a CSV file containing credit applicant records for high-throughput batch scoring.</p>
+                    </div>
+                    
+                    <div class="drop-zone" id="drop-zone" onclick="document.getElementById('csv-file-input').click()">
+                        <i class="fa-solid fa-cloud-arrow-up drop-icon"></i>
+                        <h3>Drag & Drop applicant CSV dataset here</h3>
+                        <p>or click to browse local files</p>
+                        <input type="file" id="csv-file-input" accept=".csv" style="display:none;" onchange="handleFileUpload(event)">
+                    </div>
+
+                    <div id="batch-summary" class="batch-summary-grid" style="display: none;">
+                        <div class="summary-card low">
+                            <h3 id="batch-low-count">0</h3>
+                            <p>Low Risk (Approved)</p>
+                        </div>
+                        <div class="summary-card med">
+                            <h3 id="batch-med-count">0</h3>
+                            <p>Medium Risk (Review)</p>
+                        </div>
+                        <div class="summary-card high">
+                            <h3 id="batch-high-count">0</h3>
+                            <p>High Risk (Rejected)</p>
+                        </div>
+                    </div>
+
+                    <div class="table-container" id="table-container" style="display: none;">
+                        <table class="data-table" id="batch-results-table">
+                            <thead>
+                                <tr>
+                                    <th>Index</th>
+                                    <th>Default Probability</th>
+                                    <th>Risk Percentage</th>
+                                    <th>Risk Level</th>
+                                    <th>System Action</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- TAB 3: MODEL BENCHMARKS & SHAP ANALYTICS -->
+            <section id="analytics-tab" class="tab-content">
+                <div class="analytics-grid">
+                    <!-- Model Benchmarks Table -->
+                    <div class="glass-card">
+                        <div class="card-header">
+                            <h2><i class="fa-solid fa-trophy"></i> Multi-Model Benchmark Comparison</h2>
+                            <p>Performance comparison of candidate classification models across metrics.</p>
+                        </div>
+                        <table class="data-table" id="benchmark-table">
+                            <thead>
+                                <tr>
+                                    <th>Model Algorithm</th>
+                                    <th>ROC-AUC</th>
+                                    <th>PR-AUC</th>
+                                    <th>F1-Score</th>
+                                    <th>Precision</th>
+                                    <th>Recall</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr><td colspan="6" style="text-align: center;">Loading benchmark metrics...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Model Comparison Chart -->
+                    <div class="glass-card">
+                        <div class="card-header">
+                            <h2><i class="fa-solid fa-chart-column"></i> ROC-AUC Performance Chart</h2>
+                        </div>
+                        <div class="chart-container">
+                            <canvas id="modelChart"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- SHAP Feature Importance Chart -->
+                    <div class="glass-card full-width">
+                        <div class="card-header">
+                            <h2><i class="fa-solid fa-magnifying-glass-chart"></i> SHAP Global Feature Importance</h2>
+                            <p>Mean absolute SHAP impact values driving model predictions across the dataset.</p>
+                        </div>
+                        <div class="chart-container large">
+                            <canvas id="shapChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+        </main>
+    </div>
+
+    <script src="/static/app.js"></script>
+</body>
+</html>
